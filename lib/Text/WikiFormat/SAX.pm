@@ -1,8 +1,8 @@
-# $Id: SAX.pm,v 1.1.1.1 2002/06/18 22:30:53 matt Exp $
+# $Id: SAX.pm,v 1.3 2002/06/20 20:34:27 matt Exp $
 
 package Text::WikiFormat::SAX;
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 use XML::SAX::Base;
 @ISA = qw(XML::SAX::Base);
 
@@ -205,7 +205,7 @@ sub _format_line {
     }
     
     if ($text =~ s/^(.*?)('')/$2/) {
-	$data->($1);
+	$self->_format_line($1, $strong, $emphasized, $line, $link, $data);
 	if ($text =~ s/^'''(.*?)'''//) {
 	    $strong->($1);
 	}
@@ -217,7 +217,7 @@ sub _format_line {
 	}
     }
     elsif ($text =~ s/^(.*?)\[([^\]]+)\]//) {
-	$data->($1);
+	$self->_format_line($1, $strong, $emphasized, $line, $link, $data);
 	$link->($2);
     }
     elsif ($text =~ s|^(.*?)(?<!["/>=])\b([A-Za-z]+(?:[A-Z]\w+)+)||) {
@@ -230,7 +230,7 @@ sub _format_line {
     }
 
     if (length($text)) {
-	warn("re-parsing $text\n");
+	# warn("re-parsing $text\n");
 	return $self->_format_line($text, $strong, $emphasized, $line, $link, $data);
     }
     
