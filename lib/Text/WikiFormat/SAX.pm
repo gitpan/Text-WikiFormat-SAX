@@ -1,8 +1,8 @@
-# $Id: SAX.pm,v 1.3 2002/06/20 20:34:27 matt Exp $
+# $Id: SAX.pm,v 1.5 2003/01/04 00:27:25 matt Exp $
 
 package Text::WikiFormat::SAX;
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 use XML::SAX::Base;
 @ISA = qw(XML::SAX::Base);
 
@@ -94,7 +94,7 @@ sub start_list {
 
 sub end_list {
     my $self = shift;
-    $self->parent->end_element(_element($self->{in_list}));
+    $self->parent->end_element(_element("$self->{in_list}list"));
     $self->parent->characters({Data => "\n"});
     $self->{in_list} = '';
 }
@@ -119,7 +119,7 @@ sub parse_wiki {
 		    $self->start_list('ordered');
 		}
 		my $el = _element('listitem');
-		_add_attr($el, value => $value);
+		_add_attrib($el, value => $value);
 		$self->parent->start_element($el);
 		$self->format_line($data);
 		$self->parent->end_element(_element('listitem', 1));
@@ -213,7 +213,8 @@ sub _format_line {
 	    $emphasized->($1);
 	}
 	else {
-	    warn("bad formatting: $text");
+            $text =~ s/^(.*)$//;
+            $data->($1);
 	}
     }
     elsif ($text =~ s/^(.*?)\[([^\]]+)\]//) {

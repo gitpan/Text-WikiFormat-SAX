@@ -20,3 +20,5 @@ ok($output, qr/<wiki>.*<\/wiki>/s, "Matches basic wiki outline");
 __DATA__
 
 Some Wiki text.
+
+With '' some quotes
